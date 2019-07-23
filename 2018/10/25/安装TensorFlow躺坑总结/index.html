@@ -1,99 +1,169 @@
-extends includes/layout.pug
-
-block top_img
-  - var top_img = page.top_img || theme.post_meta.top_img || theme.top_img || config.top_img
-  if (top_img && page.top_img !== false)
-    - var bg_img = top_img !== true ? `background-image: url(${top_img})` : ''
-    - var flag = top_img === true ? 'no-bg' : ''
-    div#top-container(style=bg_img class=flag)
-      include ./includes/header.pug
-      #post-info
-        #post-title= page.title || _p('no_title')
-        #post-meta
-          if (theme.post_meta.date_type)
-            - var date_type = theme.post_meta.date_type === 'updated' ? 'updated' : 'date'
-            time.post-meta__date #[i.fa.fa-calendar(aria-hidden="true")] #[=date(page[date_type], config.date_format)]
-          if (theme.post_meta.categories && page.categories.data.length > 0)
-            if (theme.post_meta.date_type)
-              span.post-meta__separator |
-            each item, index in page.categories.data
-              i.fa.fa-inbox.post-meta__icon(aria-hidden="true")
-              a(href=url_for(item.path)).post-meta__categories #[=item.name]
-              if (index < page.categories.data.length - 1)
-                 i.fa.fa-angle-right(aria-hidden="true")
-          if (theme.disqus.enable && theme.disqus.count)
-            if (theme.post_meta.date_type || theme.post_meta.categories && page.categories.data.length > 0)
-              span.post-meta__separator |
-            i.fa.fa-comment-o.post-meta__icon(aria-hidden="true")
-            a(href=url_for(page.path) + '#disqus_thread')
-              span.disqus-comment-count(data-disqus-identifier=page.path)
-          if (theme.wordcount && theme.wordcount.enable)
-            .post-meta-wordcount
-              span= _p('post.wordcount') + ': '
-              span.word-count= wordcount(page.content)
-              span.post-meta__separator |
-              span= _p('post.min2read', min2read(page.content, {cn: 350, en: 160}))
-  else
-    div#top-container.plain
-      include ./includes/header.pug
-
-block content
-  article#post(class="")
-    if (!top_img)
-      #post-title.plain= page.title || _p('no_title')
-      #post-meta
-        if (theme.post_meta.date_type)
-          - var date_type = theme.post_meta.date_type === 'updated' ? '' : 'date'
-          time.post-meta__date #[i.fa.fa-calendar(aria-hidden="true")] #[=date(page[date_type], config.date_format)]
-        if (theme.post_meta.categories && page.categories.data.length > 0)
-          if (theme.post_meta.date_type)
-            span.post-meta__separator |
-          each item, index in page.categories.data
-            i.fa.fa-inbox(aria-hidden="true")
-            a(href=url_for(item.path)).post-meta__categories  #[=item.name]
-            if (index < page.categories.data.length - 1)
-                i.fa.fa-angle-right.post-meta__separator(aria-hidden="true")
-        if (theme.disqus.enable && theme.disqus.count)
-          if (theme.post_meta.date_type || theme.post_meta.categories && page.categories.data.length > 0)
-            span.post-meta__separator |
-          i.fa.fa-comment-o(aria-hidden="true")
-          a(href=url_for(page.path) + '#disqus_thread')
-            span.disqus-comment-count(data-disqus-identifier=page.path)
-        if (theme.wordcount && theme.wordcount.enable)
-          span.post-meta__separator |
-          span.post-meta-wordcount
-            span= _p('post.wordcount') + ': '
-            span.word-count= wordcount(page.content)
-            span.post-meta__separator |
-            span= _p('post.min2read', min2read(page.content, {cn: 350, en: 160}))
-    #post-content.article-container!= page.content
-  if (theme.post_copyright && theme.post_copyright.enable)
-    .post-copyright
-      .post-copyright__author
-        span.post-copyright-meta= _p('post.copyright.author') + ": "
-        span.post-copyright-info
-          a(href=`mailto:${config.email}`) #[=config.author]
-      .post-copyright__type
-        span.post-copyright-meta= _p('post.copyright.link') + ": "
-        span.post-copyright-info
-          a(href=url_for(page.permalink)) #[=page.permalink]
-      .post-copyright__notice
-        span.post-copyright-meta= _p('post.copyright.copyright_notice') + ": "
-        span.post-copyright-info!= _p('post.copyright.copyright_content', theme.post_copyright.license_url, theme.post_copyright.license, config.url, config.title)
-  if (theme.post_meta.tags)
-    .post-meta__tag-list
-      each item, index in page.tags.data
-        a(href=url_for(item.path)).post-meta__tags #[=item.name]
-  if (theme.QR_code)
-    if (theme.QR_code.length > 0)
-      .post-qr-code
-        each item in theme.QR_code
-          .post-qr-code-item
-            img.post-qr-code__img(src=(item.itemlist||item).img)
-            .post-qr-code__desc=(item.itemlist||item).text
-  include includes/share/index.pug
-  include includes/pagination.pug
-  if (theme.adv && theme.adv.enable)
-    .post-adv!= theme.adv.info
-  if page.comments !== false
-    include includes/comments/index.pug
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.9.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="安装TensorFlow躺坑总结（win + anaconda，附 keras 安装）"><meta name="keywords" content="经验指南"><meta name="author" content="Ivan Yang,undefined"><meta name="copyright" content="Ivan Yang"><title>安装TensorFlow躺坑总结（win + anaconda，附 keras 安装） | Ivan's blog</title><link rel="shortcut icon" href="/my-favicon.ico"><link rel="stylesheet" href="/css/index.css?version=1.5.6"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css?version=1.5.6"><link rel="dns-prefetch" href="https://cdn.staticfile.org"><link rel="dns-prefetch" href="https://cdn.bootcss.com"><link rel="dns-prefetch" href="https://creativecommons.org"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"We didn't find any results for the search: ${query}"}},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  }
+} </script></head><body><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar"><div class="toggle-sidebar-info text-center"><span data-toggle="Toggle article">Toggle site</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装TensorFlow躺坑总结（win-anaconda，附-keras-安装）"><span class="toc-number">1.</span> <span class="toc-text">安装TensorFlow躺坑总结（win + anaconda，附 keras 安装）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、安装CPU版本（这个比较简单）"><span class="toc-number">1.1.</span> <span class="toc-text">一、安装CPU版本（这个比较简单）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、安装gpu版本"><span class="toc-number">1.2.</span> <span class="toc-text">二、安装gpu版本</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#附-Keras-安装"><span class="toc-number">2.</span> <span class="toc-text">附 Keras 安装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#后记"><span class="toc-number">3.</span> <span class="toc-text">后记</span></a></li></ol></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="/img/lm.JPG"></div><div class="author-info__name text-center">Ivan Yang</div><div class="author-info__description text-center">世界，你好</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">Articles</span><span class="pull-right">18</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">Tags</span><span class="pull-right">12</span></a><a class="author-info-articles__categories article-meta" href="/categories"><span class="pull-left">Categories</span><span class="pull-right">19</span></a></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(/img/yk.jpg)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">Ivan's blog</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus"><a class="site-page social-icon search"><i class="fa fa-search"></i><span> Search</span></a><a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a></span></div><div id="post-info"><div id="post-title">安装TensorFlow躺坑总结（win + anaconda，附 keras 安装）</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2018-10-25</time><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/经验/">经验</a><i class="fa fa-angle-right" aria-hidden="true"></i><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/经验/深度学习/">深度学习</a><div class="post-meta-wordcount"><span>Word count: </span><span class="word-count">1,762</span><span class="post-meta__separator">|</span><span>Reading time: 6 min</span></div></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><h2 id="安装TensorFlow躺坑总结（win-anaconda，附-keras-安装）"><a href="#安装TensorFlow躺坑总结（win-anaconda，附-keras-安装）" class="headerlink" title="安装TensorFlow躺坑总结（win + anaconda，附 keras 安装）"></a>安装TensorFlow躺坑总结（win + anaconda，附 keras 安装）</h2><blockquote>
+<p>我的笔记本之前装过一个，结果环境崩了<br>抱着试试的心态装一个TensorFlow-gpu，完美地用了一天，结果，<br>又炸了。。。<br>心态崩了的我决定写一篇总结来记录这一路上的坑 /笑哭</p>
+</blockquote>
+<h3 id="一、安装CPU版本（这个比较简单）"><a href="#一、安装CPU版本（这个比较简单）" class="headerlink" title="一、安装CPU版本（这个比较简单）"></a>一、安装CPU版本（这个比较简单）</h3><ol>
+<li><p>可以先加一下清华仓库的镜像，这样更新会快一些 (以下均为anaconda prompt操作)</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">conda config --add channels https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/</span><br><span class="line">conda config --set show_channel_urls yes</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>创建环境，安装Python3.6</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda create --name tensorflow python=<span class="number">3.6</span>   //tensorflow是名字</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>激活环境（很重要）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">activate tensorflow</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装tensorflow</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install --upgrade --ignore-installed tensorflow![1](C:\Users\asusA\Desktop\1.png)</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/1.png" alt></p>
+<p>（图片不是当时的图，仅供参考。。）</p>
+<p>一定注意准备安装的时候这个环境有没有选对！！！不然就装错环境了（血泪教训）</p>
+</li>
+<li><p>验证</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">//先在环境下输入python，然后依次执行下面的</span><br><span class="line">import tensorflow as tf</span><br><span class="line">hello = tf.constant(&apos;hello,tf&apos;)</span><br><span class="line">sess = tf.Session()</span><br><span class="line">print(sess.run(hello))</span><br></pre></td></tr></table></figure>
+<p>结果如下：</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/2.png" alt></p>
+<p>tensorflow就安装好啦！</p>
+</li>
+<li><p>安装Spyder和jupyter的插件</p>
+<p>a 打开<code>Anaconda Navigator</code>，选择<code>Not installed</code>，找到 jupyter和Spyder并安装，笔者这里已经安装好，所以在这个页面没有显示。 </p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/3.jpg" alt></p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/4.jpg" alt></p>
+<p>安装好了之后可以打开Spyder和jupyter运行一下上面的代码</p>
+<p>以上参考<a href="https://blog.csdn.net/u010858605/article/details/64128466/" target="_blank" rel="noopener">Win10下用Anaconda安装TensorFlow</a></p>
+</li>
+</ol>
+<hr>
+<p>   以上还比较轻松，在网速可以的情况下没有大问题。</p>
+<p>   但是。。下面就要开始坑了 / 笑哭</p>
+<h3 id="二、安装gpu版本"><a href="#二、安装gpu版本" class="headerlink" title="二、安装gpu版本"></a>二、安装gpu版本</h3><p>​    主要参考<a href="https://blog.csdn.net/weixin_42359147/article/details/80622306" target="_blank" rel="noopener">tensorflow-gpu1.8.0+win10+vs2017+CUDA9.2 安装——从挖坑到跳坑到出坑</a></p>
+<p>​    以及<a href="https://blog.csdn.net/weixin_39290638/article/details/80045236" target="_blank" rel="noopener">Win10下Tensorflow(GPU版)安装趟坑实录</a></p>
+<p>​    安装tensorflow-gpu之前，还需要安装两个东西 CUDA 和 cudnn</p>
+<p>​    CUDA是9.2版本，对应cudnn的版本是7.1.2</p>
+<ol>
+<li><p>安装CUDA和cudnn</p>
+<p>按照 <a href="https://blog.csdn.net/weixin_39290638/article/details/80045236" target="_blank" rel="noopener">Win10下Tensorflow(GPU版)安装趟坑实录</a> 这篇文章来安装，基本没有太多问题</p>
+<p>我后来又捣鼓着加了环境变量，有可能有用吧。。。</p>
+<p>最上面的四个</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/5.png" alt></p>
+</li>
+<li><p>安装tensorflow-gpu（划重点！！！）</p>
+<p>一开始尝试了<code>pip install --ignore-installed --upgrade tensorflow-gpu</code></p>
+<p>失败。。</p>
+<p>参考 <a href="https://blog.csdn.net/gyp2448565528/article/details/79451212" target="_blank" rel="noopener">Win10系统下Anaconda的tensorflow-gpu安装</a>，继续尝试  </p>
+<p> <code>pip install --ignore-installed --upgrade tensorflow-gpu -i https://pypi.tuna.tsinghua.edu.cn/simple</code></p>
+<p>还是失败。。</p>
+<p>最后，林大神出现了，指明了前进的方向 →_→</p>
+<hr>
+<p>以下步入正题：</p>
+<ol>
+<li><p>打开anaconda prompt，输入</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anaconda search -t conda tensorflow-gpu</span><br></pre></td></tr></table></figure>
+<p>会列出可用的安装包，长这个样子：</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/6.png" alt></p>
+<p>然后选一个中意的（版本稍微高一点，然后支持win64），我选了anaconda/tensorflow-gpu</p>
+<p>接下来输入：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">anaconda show anaconda/tensorflow-gpu // 对应于上面选的包</span><br></pre></td></tr></table></figure>
+<p>会弹出安装方法：</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/7.png" alt></p>
+<p>然后进入环境<code>activate tensorflow-gpu</code> (此处默认环境已经新建好了)</p>
+<p>输入上面划线的那个代码，然后就可以安装了</p>
+<p>（不出意外的话应该半个多小时可以安装好）</p>
+<p>PS：如果页面发现不下载了，可能是页面卡住了，黑色界面单击鼠标右键就好</p>
+</li>
+<li><p>验证是否用CUDA加速</p>
+<p>参考 <a href="https://blog.csdn.net/weixin_42359147/article/details/80622306" target="_blank" rel="noopener">tensorflow-gpu1.8.0+win10+vs2017+CUDA9.2 安装——从挖坑到跳坑到出坑</a></p>
+</li>
+</ol>
+</li>
+</ol>
+<p>   大功告成的话就可以稍稍庆祝一下啦</p>
+<hr>
+<h2 id="附-Keras-安装"><a href="#附-Keras-安装" class="headerlink" title="附 Keras 安装"></a>附 Keras 安装</h2><ol>
+<li><p>进入<strong>需要安装的环境</strong>，然后安装Keras</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install keras</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装MinGW</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">conda install mingw libpython</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>验证</p>
+<p>输入Python，再输入import keras，显示Using TensorFlow backed，则说明安装成功，如图。</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/8.png" alt></p>
+</li>
+</ol>
+<p>​    参考<a href="http://www.mamicode.com/info-detail-2180288.html" target="_blank" rel="noopener">Win10系统 安装Anaconda+TensorFlow+Keras</a></p>
+<h2 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h2><p>　　安装好了的第二天我很高兴地跑吴恩达的代码作业，发现没有pil库，倒腾了半天，装了pillow，还顺便装了opencv，结果吃完饭就发现。。<strong>jupyter has died</strong>. 然后发现import tensorflow as tf 没有反应。下面开始我的检查之旅：</p>
+<ol>
+<li><p>用如下的代码检查了一下CUDA和GPU发现结果是false，就很僵硬</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line">a = tf.test.is_built_with_cuda()  <span class="comment"># 判断CUDA是否可以用</span></span><br><span class="line">b = tf.test.is_gpu_available(</span><br><span class="line">    cuda_only=<span class="literal">False</span>,</span><br><span class="line">    min_cuda_compute_capability=<span class="literal">None</span>)                                  <span class="comment"># 判断GPU是否可以用</span></span><br><span class="line">print(a)</span><br><span class="line">print(b)</span><br><span class="line">tf.__version__</span><br></pre></td></tr></table></figure>
+<p>结果正常应该是这样的：</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/9.png" div align="left/"></p>
+</li>
+<li><p>运行cmd检查CUDA安装</p>
+<p>通过cd到C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\extras\demo_suite目录下，执行bandwidthTest.exe，deviceQuery.exe，两步都打印出【Result=PASS】，则CUDA安装成功      参考 <a href="https://blog.csdn.net/u014610925/article/details/79642076" target="_blank" rel="noopener">win10下GPU加速的Keras配置（CUDA, cuDNN）</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 在cmd窗口下一次执行下面的语句（cmd窗口可以通过win+R快捷键找到）</span><br><span class="line">cd C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v9.0\extras\demo_suite</span><br><span class="line">bandwidthTest.exe</span><br><span class="line">deviceQuery.exe</span><br></pre></td></tr></table></figure>
+<p>效果如下图：（有时候开机之后发现没有pass。可能不是CUDA的问题，重启就好了）</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/10.jpg" alt="bandwidthTest.exe结果"></p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/11.jpg" alt="deviceQuery.exe结果"></p>
+<p>继续输入代码检查nvcc：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nvcc -V</span><br></pre></td></tr></table></figure>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/12.png" alt="检查nvcc"></p>
+</li>
+<li><p>后来出现了以上两步都没问题，跑小代码也没问题，结果运行模型就开始died。。。试图重装tensorflow，重新配环境，好了一两天，结果装了几个库之后又崩了，于是下定决心找问题</p>
+</li>
+</ol>
+<p>下面开始拯救之旅：</p>
+<ol>
+<li><p>重新安装tensorflow，用原来的包安装，用不同的包安装，配新的环境安装，都没有解决实质问题</p>
+</li>
+<li><p>周日怀疑是CUDA和cudnn的问题，安装的版本不兼容可能还会有问题。于是重新装了CUDA9.0和cudnn7.3.0。当天晚上依然没有解决，感觉在疯了的边缘挣扎</p>
+<p>不过获得了有效信息，关于如何鉴别CUDA和cudnn的版本兼容，参考<a href="https://blog.csdn.net/XCCCCZ/article/details/80385448" target="_blank" rel="noopener">我的AI之路(5)–如何选择和正确安装跟Tensorflow版本对应的CUDA和cuDNN版本</a></p>
+<p>这次的安装我配了好多环境变量，参考了<a href="https://blog.csdn.net/u014610925/article/details/79642076" target="_blank" rel="noopener">win10下GPU加速的Keras配置（CUDA, cuDNN）</a></p>
+<p><strong>注意</strong>：环境变量它有两个图，第一幅图里的不要配，会报错。只配第二幅图。不过后来感觉可能和环境也没啥关系</p>
+</li>
+<li><p>周一上完毛概课，吃完午饭调整好情绪，继续尝试。此时关注到jupyternotebook的后台窗口有显示下面的error</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/13.jpg" alt="jupyternotebook后台报错"></p>
+<p>从上图可以看到，刚开始还是在用我的950M的GPU，后来我运行模型的时候就开始崩了，各种error。上网查了资料，给出的解答是由于GPU配置不对造成的。下面给出这个折腾了我多天的问题的解决方案（目前还比较有效）</p>
+<hr>
+<p>运行Python模型之前运行这段代码：</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">import tensorflow as tf</span><br><span class="line">config = tf.ConfigProto()</span><br><span class="line">config.gpu_options.allow_growth = True</span><br><span class="line">session = tf.Session(config=config)</span><br></pre></td></tr></table></figure>
+<p>​    看一下jupyternotebook后台的变化：</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/14.jpg" alt="jupyternotebook后台"></p>
+<p>​    好像没问题了。。然后就很神奇地发现，模型可以跑了！</p>
+<p>​    附上一张训练的图：</p>
+<p><img src="/2018/10/25/安装TensorFlow躺坑总结/15.png" alt="mnist数据库训练"></p>
+<p>​    吴恩达的作业里写：16 seconds per epoch on a GRID K520 GPU，我的950M平均23s，感觉也    还蛮快/笑哭</p>
+<p>​    希望可以正式结篇了。。。</p>
+<p>​    注：那个代码好像得每一次开一个新的文件就要运行一遍。有时候还会出现resource exhausted的提示。个人理解是内存不够了。推荐关掉程序重开</p>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">Ivan Yang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://blog.ivan-yang.com/2018/10/25/安装TensorFlow躺坑总结/">https://blog.ivan-yang.com/2018/10/25/安装TensorFlow躺坑总结/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/经验指南/">经验指南</a></div><nav id="pagination"><div class="prev-post pull-left"><a href="/2018/10/26/光影流年-天堂电影院/"><i class="fa fa-chevron-left">  </i><span>光影流年，岁月如歌|【天堂电影院 Nuovo Cinema Paradiso】</span></a></div><div class="next-post pull-right"><a href="/2018/10/13/光影流年-触不可及-Intouchables/"><span>光影流年，岁月如歌|【触不可及 Intouchables】</span><i class="fa fa-chevron-right"></i></a></div></nav></div></div><footer><div class="layout" id="footer"><div class="copyright">&copy;2018 - 2019 By Ivan Yang</div><div class="framework-info"><span>Driven - </span><a href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme - </span><a href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="busuanzi"><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file-o"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="/js/third-party/anime.min.js"></script><script src="/js/third-party/jquery.min.js"></script><script src="/js/third-party/jquery.fancybox.min.js"></script><script src="/js/third-party/velocity.min.js"></script><script src="/js/third-party/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.5.6"></script><script src="/js/fancybox.js?version=1.5.6"></script><script src="/js/sidebar.js?version=1.5.6"></script><script src="/js/copy.js?version=1.5.6"></script><script src="/js/fireworks.js?version=1.5.6"></script><script src="/js/transition.js?version=1.5.6"></script><script src="/js/scroll.js?version=1.5.6"></script><script src="/js/head.js?version=1.5.6"></script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  CommonHTML: {
+    linebreaks: { automatic: true, width: "90% container" }
+  },
+  "HTML-CSS": { 
+    linebreaks: { automatic: true, width: "90% container" }
+  },
+  "SVG": { 
+    linebreaks: { automatic: true, width: "90% container" }
+  }
+});
+</script><script type="text/x-mathjax-config">MathJax.Hub.Queue(function() {
+  var all = MathJax.Hub.getAllJax(), i;
+  for (i=0; i < all.length; i += 1) {
+    all[i].SourceElement().parentNode.className += ' has-jax';
+  }
+});
+</script><script src="https://cdn.jsdelivr.net/npm/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script src="/js/search/local-search.js"></script><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">Local search</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts"></div></div></div><hr><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>Powered by</span> <a href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a></div></div></div><span class="search-close-button"><i class="fa fa-times"></i></span></div><div class="search-mask"></div></body></html>

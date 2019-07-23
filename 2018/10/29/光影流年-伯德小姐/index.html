@@ -1,99 +1,94 @@
-extends includes/layout.pug
-
-block top_img
-  - var top_img = page.top_img || theme.post_meta.top_img || theme.top_img || config.top_img
-  if (top_img && page.top_img !== false)
-    - var bg_img = top_img !== true ? `background-image: url(${top_img})` : ''
-    - var flag = top_img === true ? 'no-bg' : ''
-    div#top-container(style=bg_img class=flag)
-      include ./includes/header.pug
-      #post-info
-        #post-title= page.title || _p('no_title')
-        #post-meta
-          if (theme.post_meta.date_type)
-            - var date_type = theme.post_meta.date_type === 'updated' ? 'updated' : 'date'
-            time.post-meta__date #[i.fa.fa-calendar(aria-hidden="true")] #[=date(page[date_type], config.date_format)]
-          if (theme.post_meta.categories && page.categories.data.length > 0)
-            if (theme.post_meta.date_type)
-              span.post-meta__separator |
-            each item, index in page.categories.data
-              i.fa.fa-inbox.post-meta__icon(aria-hidden="true")
-              a(href=url_for(item.path)).post-meta__categories #[=item.name]
-              if (index < page.categories.data.length - 1)
-                 i.fa.fa-angle-right(aria-hidden="true")
-          if (theme.disqus.enable && theme.disqus.count)
-            if (theme.post_meta.date_type || theme.post_meta.categories && page.categories.data.length > 0)
-              span.post-meta__separator |
-            i.fa.fa-comment-o.post-meta__icon(aria-hidden="true")
-            a(href=url_for(page.path) + '#disqus_thread')
-              span.disqus-comment-count(data-disqus-identifier=page.path)
-          if (theme.wordcount && theme.wordcount.enable)
-            .post-meta-wordcount
-              span= _p('post.wordcount') + ': '
-              span.word-count= wordcount(page.content)
-              span.post-meta__separator |
-              span= _p('post.min2read', min2read(page.content, {cn: 350, en: 160}))
-  else
-    div#top-container.plain
-      include ./includes/header.pug
-
-block content
-  article#post(class="")
-    if (!top_img)
-      #post-title.plain= page.title || _p('no_title')
-      #post-meta
-        if (theme.post_meta.date_type)
-          - var date_type = theme.post_meta.date_type === 'updated' ? '' : 'date'
-          time.post-meta__date #[i.fa.fa-calendar(aria-hidden="true")] #[=date(page[date_type], config.date_format)]
-        if (theme.post_meta.categories && page.categories.data.length > 0)
-          if (theme.post_meta.date_type)
-            span.post-meta__separator |
-          each item, index in page.categories.data
-            i.fa.fa-inbox(aria-hidden="true")
-            a(href=url_for(item.path)).post-meta__categories  #[=item.name]
-            if (index < page.categories.data.length - 1)
-                i.fa.fa-angle-right.post-meta__separator(aria-hidden="true")
-        if (theme.disqus.enable && theme.disqus.count)
-          if (theme.post_meta.date_type || theme.post_meta.categories && page.categories.data.length > 0)
-            span.post-meta__separator |
-          i.fa.fa-comment-o(aria-hidden="true")
-          a(href=url_for(page.path) + '#disqus_thread')
-            span.disqus-comment-count(data-disqus-identifier=page.path)
-        if (theme.wordcount && theme.wordcount.enable)
-          span.post-meta__separator |
-          span.post-meta-wordcount
-            span= _p('post.wordcount') + ': '
-            span.word-count= wordcount(page.content)
-            span.post-meta__separator |
-            span= _p('post.min2read', min2read(page.content, {cn: 350, en: 160}))
-    #post-content.article-container!= page.content
-  if (theme.post_copyright && theme.post_copyright.enable)
-    .post-copyright
-      .post-copyright__author
-        span.post-copyright-meta= _p('post.copyright.author') + ": "
-        span.post-copyright-info
-          a(href=`mailto:${config.email}`) #[=config.author]
-      .post-copyright__type
-        span.post-copyright-meta= _p('post.copyright.link') + ": "
-        span.post-copyright-info
-          a(href=url_for(page.permalink)) #[=page.permalink]
-      .post-copyright__notice
-        span.post-copyright-meta= _p('post.copyright.copyright_notice') + ": "
-        span.post-copyright-info!= _p('post.copyright.copyright_content', theme.post_copyright.license_url, theme.post_copyright.license, config.url, config.title)
-  if (theme.post_meta.tags)
-    .post-meta__tag-list
-      each item, index in page.tags.data
-        a(href=url_for(item.path)).post-meta__tags #[=item.name]
-  if (theme.QR_code)
-    if (theme.QR_code.length > 0)
-      .post-qr-code
-        each item in theme.QR_code
-          .post-qr-code-item
-            img.post-qr-code__img(src=(item.itemlist||item).img)
-            .post-qr-code__desc=(item.itemlist||item).text
-  include includes/share/index.pug
-  include includes/pagination.pug
-  if (theme.adv && theme.adv.enable)
-    .post-adv!= theme.adv.info
-  if page.comments !== false
-    include includes/comments/index.pug
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.9.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="光影流年，岁月如歌|【伯德小姐 Lady Bird】"><meta name="keywords" content="Movie,青春,亲情"><meta name="author" content="Ivan Yang,undefined"><meta name="copyright" content="Ivan Yang"><title>光影流年，岁月如歌|【伯德小姐 Lady Bird】 | Ivan's blog</title><link rel="shortcut icon" href="/my-favicon.ico"><link rel="stylesheet" href="/css/index.css?version=1.5.6"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css?version=1.5.6"><link rel="dns-prefetch" href="https://cdn.staticfile.org"><link rel="dns-prefetch" href="https://cdn.bootcss.com"><link rel="dns-prefetch" href="https://creativecommons.org"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"We didn't find any results for the search: ${query}"}},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  }
+} </script></head><body><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar"><div class="toggle-sidebar-info text-center"><span data-toggle="Toggle article">Toggle site</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="/img/lm.JPG"></div><div class="author-info__name text-center">Ivan Yang</div><div class="author-info__description text-center">世界，你好</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">Articles</span><span class="pull-right">18</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">Tags</span><span class="pull-right">12</span></a><a class="author-info-articles__categories article-meta" href="/categories"><span class="pull-left">Categories</span><span class="pull-right">19</span></a></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(/img/yk.jpg)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">Ivan's blog</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus"><a class="site-page social-icon search"><i class="fa fa-search"></i><span> Search</span></a><a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a></span></div><div id="post-info"><div id="post-title">光影流年，岁月如歌|【伯德小姐 Lady Bird】</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2018-10-29</time><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/光影流年/">光影流年</a><i class="fa fa-angle-right" aria-hidden="true"></i><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/光影流年/青春/">青春</a><div class="post-meta-wordcount"><span>Word count: </span><span class="word-count">1,689</span><span class="post-meta__separator">|</span><span>Reading time: 5 min</span></div></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><blockquote>
+<p>– 你好，青春</p>
+<p>– 你好</p>
+</blockquote>
+<p><img src="/2018/10/29/光影流年-伯德小姐/lady bird.jpg" alt></p>
+<a id="more"></a>
+<p>类型：青春 / 爱情 / 亲情 / 友谊 </p>
+<p>上映年份：2017 年</p>
+<p>片长：93 分钟 </p>
+<p>推荐指数： <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i> <i class="fa fa-star" aria-hidden="true"></i><i class="fa fa-star-half" aria-hidden="true"></i></p>
+<p>​    这篇其实是我第一篇真正意义上博客影评。很开心可以做这个属于自己的版块（也分享给同样可爱的同学），写点喜欢的东西。那么现在，就正式开始啦。</p>
+<p>​    刚开始接触到这个电影的时候就看到它是奥斯卡最佳影片的候选（记不太清了），然后同学看了，觉得哪天也尝试一下，结果就一直拖到现在。不过也不算太晚。在一个无事的晚上，翻阅一个女孩的青春足迹。又何尝不是在翻阅自己。</p>
+<p>​    这里有一个为青春所迷茫的女孩，围绕着她的有一个big heart却不言的mother，总也看不顺眼的哥哥和她女朋友（这个最后看顺眼了）有一个最终又回归于彼此的好闺蜜Julie，几个大猪蹄子的男友（个人觉得第二个Kyle比较帅气）。影片刚开始就是叛逆女孩Lady Bird和她妈妈的爱恨情仇。她们互相爱着彼此，却又在各自生活的压力下宣泄着。她们的家庭并不富裕，爸爸患有抑郁症，又失业了，妈妈在精神病院上班很辛苦。女儿在一所不喜欢的高中，不满着现状，梦想是去一所心爱的有人文气息的大学。争吵的高潮处，Lady Bird直接打开车门冲了出去，伴随着的是妈妈的惊恐到极点。</p>
+<p>​    上高中了。无聊的课程，无聊的同学，比较有意思的可能只有好闺蜜，喜剧表演和一直埋藏于心底的梦想。她和别人解释自己妈妈的Mad，却最终被爸爸一语道破，其实和妈妈一样，full of personality. 她贴着搞怪的海报，和自己喜欢的男生共度时光，在老师的车子后面贴着玩笑话，在讲座上一语惊人。她是个没有感情的杀手，她不在乎那些无关紧要的人和事，却会因为自己内心的柔软而受伤。她看到自己的男友是gay后和闺蜜躺在草地上一边听歌一边哽咽，也在他最无助的时候给予拥抱。她带着性格中的倔强偷偷隐瞒家庭的地址，败露之后放下一切的曾经高高的自尊问：我们以后还能是好朋友吗？她向妈妈拼命发泄着自己的不满，最后的祈求却是让妈妈和自己说说话。她和着自己最好的闺蜜争吵，最终坐在身边，带着曾经的歉意问一句：Are you OK? 在Kyle的车上，她附和着说不去舞会。当音乐响起的一刻，当Kyle说自己不喜欢的时候，她说出了自己的心里话，最终选择下车的背影，或许是一个从迷茫走向成熟的Lady Bird。夕阳的余晖下，两个曾经的好伙伴无话不谈。彼此都是生命中的过客，但那一刹那，不离不弃是最美的誓言。</p>
+<p>​    她读了妈妈曾经没有寄出去的信。往日的隔阂，化为烟消云散。当不信神的男生问她的名字时，她说出了整个青春或许都不曾说出的那个名字，Christine，一个包含着父母爱与希望的名字。</p>
+<p>​    影片中有许多绝妙的巧合，在此不一一列举。不过有很多发人深思的经典台词和细节：</p>
+<ol>
+<li><p>We’re afraid that we will never escape out past and we are afraid of what the future will bring … We’re afraid we won’t be loved, we won’t be liked, we won’t succeed.我们害怕无法摆脱过去的枷锁，我们害怕未来…我们害怕不被宠爱，不被喜欢,不能出人头地。</p>
+</li>
+<li><p>“我只是希望你成为最好的自己。”“如果这已经是最好的我呢？”</p>
+</li>
+<li><p>他们都没看懂。– 演出结束，Julie和历史老师有聊无聊地打完招呼坐在神父的身边，神父说出了这句话。这让我想起：热闹都是他们的，我什么也没有</p>
+</li>
+<li><p>伤人的事很多，不只是战争。– 一个受伤的女生对一个冷血的男友说出的话</p>
+</li>
+<li><p>女儿发现了爸爸的抑郁症。</p>
+<p>– 爸爸有抑郁症？</p>
+<p>– 干嘛这么问？</p>
+<p>– 药瓶上有爸爸的名字。</p>
+<p>– 爸爸得忧郁症好几年了。</p>
+<p>– 我什么都不知道。</p>
+<p>– 有钱不一定快乐。</p>
+<p>– 他在担心钱？</p>
+<p>– 成功不代表什么，只代表你成功了。</p>
+<p>– 那不就成功了。</p>
+<p>– 但不一定会快乐。</p>
+<p>– 他不快乐。</p>
+</li>
+<li><p>人们用父母给予的名字称呼彼此，但他们却不相信上帝。</p>
+</li>
+<li><p>女儿问妈妈，你难道就没有不收拾好衣服就上床的经历吗？难道我不想成为一个让妈妈满意的女儿吗？妈妈和上门之前说，我有一个酗酒成性的妈妈。</p>
+<p>妈妈曾经也拥有你所不知道的苦涩</p>
+</li>
+<li><p>爸爸问你怎么知道是我的？女儿回答，因为妈妈从不敲门。</p>
+</li>
+<li><p>神父带着大家一起玩一个谁先哭的游戏，最终自己却先哭了。或许泪水一直等在那里，带着生活的艰辛与苦难，每到触动之处，潸然而泪下。</p>
+</li>
+<li><p>爸爸和儿子一起竞争同一个职位，影片给出的结局是：爸爸对儿子说：congratulation</p>
+</li>
+<li><p>女儿带着青春的苦涩和叛逆向妈妈的苛刻要求发火，妈妈说：你爸爸失业了</p>
+<p>妈妈：你难道不知道爸爸因为你要提前一个街区下车二感到难过吗？ 他感觉糟透了。</p>
+<p>最后放在女儿包里的信，是爸爸保存好留给女儿的，希望女儿可以理解妈妈</p>
+<p>开车送女儿去机场，妈妈故作担心停车费太贵而加速离开。那一路，情绪涌上心头，嘴角忍不住地颤抖</p>
+<p>父母爱你，也深爱着彼此</p>
+</li>
+<li><p>抑郁症和同性恋的问题，家庭的压力，青春的叛逆，友谊的坎坷，爱情的跌宕起伏，社会的失业问题，政府对人民信息的窃取，还有隐约提到的美国发动的对中东的战争</p>
+</li>
+</ol>
+<hr>
+<p>​    女主最终去了纽约，最心仪的地方，找了一个老实人，和妈妈重归于好。</p>
+<p>​    嗯，这一定是故事开始就注定的。叛逆青春，陡然长大。</p>
+<p><img src="/2018/10/29/光影流年-伯德小姐/D:/blog\source\_posts\光影流年-伯德小姐\1.gif" alt="1"></p>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">Ivan Yang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://blog.ivan-yang.com/2018/10/29/光影流年-伯德小姐/">https://blog.ivan-yang.com/2018/10/29/光影流年-伯德小姐/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Movie/">Movie</a><a class="post-meta__tags" href="/tags/青春/">青春</a><a class="post-meta__tags" href="/tags/亲情/">亲情</a></div><nav id="pagination"><div class="prev-post pull-left"><a href="/2018/10/31/Python常用语法总结/"><i class="fa fa-chevron-left">  </i><span>Python常用语法总结及安装库</span></a></div><div class="next-post pull-right"><a href="/2018/10/26/光影流年-天堂电影院/"><span>光影流年，岁月如歌|【天堂电影院 Nuovo Cinema Paradiso】</span><i class="fa fa-chevron-right"></i></a></div></nav></div></div><footer><div class="layout" id="footer"><div class="copyright">&copy;2018 - 2019 By Ivan Yang</div><div class="framework-info"><span>Driven - </span><a href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme - </span><a href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="busuanzi"><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file-o"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="/js/third-party/anime.min.js"></script><script src="/js/third-party/jquery.min.js"></script><script src="/js/third-party/jquery.fancybox.min.js"></script><script src="/js/third-party/velocity.min.js"></script><script src="/js/third-party/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.5.6"></script><script src="/js/fancybox.js?version=1.5.6"></script><script src="/js/sidebar.js?version=1.5.6"></script><script src="/js/copy.js?version=1.5.6"></script><script src="/js/fireworks.js?version=1.5.6"></script><script src="/js/transition.js?version=1.5.6"></script><script src="/js/scroll.js?version=1.5.6"></script><script src="/js/head.js?version=1.5.6"></script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  CommonHTML: {
+    linebreaks: { automatic: true, width: "90% container" }
+  },
+  "HTML-CSS": { 
+    linebreaks: { automatic: true, width: "90% container" }
+  },
+  "SVG": { 
+    linebreaks: { automatic: true, width: "90% container" }
+  }
+});
+</script><script type="text/x-mathjax-config">MathJax.Hub.Queue(function() {
+  var all = MathJax.Hub.getAllJax(), i;
+  for (i=0; i < all.length; i += 1) {
+    all[i].SourceElement().parentNode.className += ' has-jax';
+  }
+});
+</script><script src="https://cdn.jsdelivr.net/npm/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script src="/js/search/local-search.js"></script><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">Local search</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts"></div></div></div><hr><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>Powered by</span> <a href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a></div></div></div><span class="search-close-button"><i class="fa fa-times"></i></span></div><div class="search-mask"></div></body></html>

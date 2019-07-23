@@ -1,99 +1,168 @@
-extends includes/layout.pug
-
-block top_img
-  - var top_img = page.top_img || theme.post_meta.top_img || theme.top_img || config.top_img
-  if (top_img && page.top_img !== false)
-    - var bg_img = top_img !== true ? `background-image: url(${top_img})` : ''
-    - var flag = top_img === true ? 'no-bg' : ''
-    div#top-container(style=bg_img class=flag)
-      include ./includes/header.pug
-      #post-info
-        #post-title= page.title || _p('no_title')
-        #post-meta
-          if (theme.post_meta.date_type)
-            - var date_type = theme.post_meta.date_type === 'updated' ? 'updated' : 'date'
-            time.post-meta__date #[i.fa.fa-calendar(aria-hidden="true")] #[=date(page[date_type], config.date_format)]
-          if (theme.post_meta.categories && page.categories.data.length > 0)
-            if (theme.post_meta.date_type)
-              span.post-meta__separator |
-            each item, index in page.categories.data
-              i.fa.fa-inbox.post-meta__icon(aria-hidden="true")
-              a(href=url_for(item.path)).post-meta__categories #[=item.name]
-              if (index < page.categories.data.length - 1)
-                 i.fa.fa-angle-right(aria-hidden="true")
-          if (theme.disqus.enable && theme.disqus.count)
-            if (theme.post_meta.date_type || theme.post_meta.categories && page.categories.data.length > 0)
-              span.post-meta__separator |
-            i.fa.fa-comment-o.post-meta__icon(aria-hidden="true")
-            a(href=url_for(page.path) + '#disqus_thread')
-              span.disqus-comment-count(data-disqus-identifier=page.path)
-          if (theme.wordcount && theme.wordcount.enable)
-            .post-meta-wordcount
-              span= _p('post.wordcount') + ': '
-              span.word-count= wordcount(page.content)
-              span.post-meta__separator |
-              span= _p('post.min2read', min2read(page.content, {cn: 350, en: 160}))
-  else
-    div#top-container.plain
-      include ./includes/header.pug
-
-block content
-  article#post(class="")
-    if (!top_img)
-      #post-title.plain= page.title || _p('no_title')
-      #post-meta
-        if (theme.post_meta.date_type)
-          - var date_type = theme.post_meta.date_type === 'updated' ? '' : 'date'
-          time.post-meta__date #[i.fa.fa-calendar(aria-hidden="true")] #[=date(page[date_type], config.date_format)]
-        if (theme.post_meta.categories && page.categories.data.length > 0)
-          if (theme.post_meta.date_type)
-            span.post-meta__separator |
-          each item, index in page.categories.data
-            i.fa.fa-inbox(aria-hidden="true")
-            a(href=url_for(item.path)).post-meta__categories  #[=item.name]
-            if (index < page.categories.data.length - 1)
-                i.fa.fa-angle-right.post-meta__separator(aria-hidden="true")
-        if (theme.disqus.enable && theme.disqus.count)
-          if (theme.post_meta.date_type || theme.post_meta.categories && page.categories.data.length > 0)
-            span.post-meta__separator |
-          i.fa.fa-comment-o(aria-hidden="true")
-          a(href=url_for(page.path) + '#disqus_thread')
-            span.disqus-comment-count(data-disqus-identifier=page.path)
-        if (theme.wordcount && theme.wordcount.enable)
-          span.post-meta__separator |
-          span.post-meta-wordcount
-            span= _p('post.wordcount') + ': '
-            span.word-count= wordcount(page.content)
-            span.post-meta__separator |
-            span= _p('post.min2read', min2read(page.content, {cn: 350, en: 160}))
-    #post-content.article-container!= page.content
-  if (theme.post_copyright && theme.post_copyright.enable)
-    .post-copyright
-      .post-copyright__author
-        span.post-copyright-meta= _p('post.copyright.author') + ": "
-        span.post-copyright-info
-          a(href=`mailto:${config.email}`) #[=config.author]
-      .post-copyright__type
-        span.post-copyright-meta= _p('post.copyright.link') + ": "
-        span.post-copyright-info
-          a(href=url_for(page.permalink)) #[=page.permalink]
-      .post-copyright__notice
-        span.post-copyright-meta= _p('post.copyright.copyright_notice') + ": "
-        span.post-copyright-info!= _p('post.copyright.copyright_content', theme.post_copyright.license_url, theme.post_copyright.license, config.url, config.title)
-  if (theme.post_meta.tags)
-    .post-meta__tag-list
-      each item, index in page.tags.data
-        a(href=url_for(item.path)).post-meta__tags #[=item.name]
-  if (theme.QR_code)
-    if (theme.QR_code.length > 0)
-      .post-qr-code
-        each item in theme.QR_code
-          .post-qr-code-item
-            img.post-qr-code__img(src=(item.itemlist||item).img)
-            .post-qr-code__desc=(item.itemlist||item).text
-  include includes/share/index.pug
-  include includes/pagination.pug
-  if (theme.adv && theme.adv.enable)
-    .post-adv!= theme.adv.info
-  if page.comments !== false
-    include includes/comments/index.pug
+<!DOCTYPE html><html><head><meta name="generator" content="Hexo 3.9.0"><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta name="description" content="托福口语| Task3-5模板"><meta name="keywords" content="TOEFL"><meta name="author" content="Ivan Yang,undefined"><meta name="copyright" content="Ivan Yang"><title>托福口语| Task3-5模板 | Ivan's blog</title><link rel="shortcut icon" href="/my-favicon.ico"><link rel="stylesheet" href="/css/index.css?version=1.5.6"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css?version=1.5.6"><link rel="dns-prefetch" href="https://cdn.staticfile.org"><link rel="dns-prefetch" href="https://cdn.bootcss.com"><link rel="dns-prefetch" href="https://creativecommons.org"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"search.xml","languages":{"hits_empty":"We didn't find any results for the search: ${query}"}},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  }
+} </script></head><body><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar"><div class="toggle-sidebar-info text-center"><span data-toggle="Toggle article">Toggle site</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Task-3"><span class="toc-number">1.</span> <span class="toc-text">Task 3</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#题目流程"><span class="toc-number">1.0.1.</span> <span class="toc-text">题目流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模板"><span class="toc-number">1.0.2.</span> <span class="toc-text">模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TIPS"><span class="toc-number">1.0.3.</span> <span class="toc-text">TIPS</span></a></li></ol></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#Task-4"><span class="toc-number">2.</span> <span class="toc-text">Task 4</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#题目流程-1"><span class="toc-number">2.0.1.</span> <span class="toc-text">题目流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模板-1"><span class="toc-number">2.0.2.</span> <span class="toc-text">模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TIPS-1"><span class="toc-number">2.0.3.</span> <span class="toc-text">TIPS</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Task-5"><span class="toc-number">3.</span> <span class="toc-text">Task 5</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#题目流程-2"><span class="toc-number">3.0.1.</span> <span class="toc-text">题目流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模板-2"><span class="toc-number">3.0.2.</span> <span class="toc-text">模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TIPS-2"><span class="toc-number">3.0.3.</span> <span class="toc-text">TIPS</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Task-6"><span class="toc-number">4.</span> <span class="toc-text">Task 6</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#题目流程-3"><span class="toc-number">4.0.1.</span> <span class="toc-text">题目流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模板-3"><span class="toc-number">4.0.2.</span> <span class="toc-text">模板</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#TIPS-3"><span class="toc-number">4.0.3.</span> <span class="toc-text">TIPS</span></a></li></ol></li></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="/img/lm.JPG"></div><div class="author-info__name text-center">Ivan Yang</div><div class="author-info__description text-center">世界，你好</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">Articles</span><span class="pull-right">18</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">Tags</span><span class="pull-right">12</span></a><a class="author-info-articles__categories article-meta" href="/categories"><span class="pull-left">Categories</span><span class="pull-right">19</span></a></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(/img/yk.jpg)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">Ivan's blog</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus"><a class="site-page social-icon search"><i class="fa fa-search"></i><span> Search</span></a><a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a></span></div><div id="post-info"><div id="post-title">托福口语| Task3-5模板</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2018-08-23</time><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/TOEFL/">TOEFL</a><i class="fa fa-angle-right" aria-hidden="true"></i><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/TOEFL/Speaking/">Speaking</a><div class="post-meta-wordcount"><span>Word count: </span><span class="word-count">731</span><span class="post-meta__separator">|</span><span>Reading time: 3 min</span></div></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><h1 id="Task-3"><a href="#Task-3" class="headerlink" title="Task 3"></a>Task 3</h1><blockquote>
+<p>吃，住，学习，娱乐生活，校园等</p>
+<p>学校又有大动作了。对不起，学生们有意见</p>
+</blockquote>
+<ol>
+<li><h3 id="题目流程"><a href="#题目流程" class="headerlink" title="题目流程"></a>题目流程</h3><p>先是看一篇<strong>文章</strong>（30s），然后听一篇<strong>听力</strong>（1min左右）</p>
+<p>之后是30s整理思路，60s回答 （10s + 50s）</p>
+<p>听力lecture的结构如下：</p>
+<p><img src="/2018/08/23/托福口语-Task3-5模板/task3.png" width="50%" height="50%" div align="left"></p>
+</li>
+<li><h3 id="模板"><a href="#模板" class="headerlink" title="模板"></a>模板</h3><p><strong>announcement (plan)</strong></p>
+<ul>
+<li>The university is planning to do sth. /on doing sth.<ul>
+<li>and the m/w in the conversation agrees with this for 2 reasons.    <em>(agree)</em>   </li>
+<li>however, the m/w in the conversation disagrees, holding 2 different points. <em>(disagree)</em> <pre><code>The first reason is that…/ First of all, …/…      
+</code></pre></li>
+</ul>
+</li>
+<li>The second reason is that…/ …</li>
+</ul>
+<p><strong>proposal (letter)</strong></p>
+<ul>
+<li>The student in the letter suggests the school should…<ul>
+<li>and the m/w in the conversation agrees with this for 2 reasons.    <em>(agree)</em>    </li>
+<li>however, the m/w in the conversation disagrees, holding 2 different points. <em>(disagree)</em><br>   The first reason is that…/ First of all, …/…     </li>
+</ul>
+</li>
+<li>The second reason is that…/ …</li>
+</ul>
+</li>
+<li><h3 id="TIPS"><a href="#TIPS" class="headerlink" title="TIPS"></a>TIPS</h3><ul>
+<li>最好可以在看文章的时候记下所说的plan，因为文章只显示一遍</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="Task-4"><a href="#Task-4" class="headerlink" title="Task 4"></a>Task 4</h1><blockquote>
+<p>心理学多一些</p>
+<p>lecture，教授给学生们讲故事，阐述一个term</p>
+</blockquote>
+<ol>
+<li><h3 id="题目流程-1"><a href="#题目流程-1" class="headerlink" title="题目流程"></a>题目流程</h3><p>先是看一篇<strong>文章</strong>（30s），然后听一篇<strong>听力</strong>（1min左右）</p>
+<p>之后是30s整理思路，60s回答（10s + 45s）</p>
+<p>听力lecture往往是一个professor在用 <strong>例子/个人经历/实验</strong> 来帮助阐述一个事情</p>
+<p>常听到的开头是：</p>
+<p><code>I&#39;v experienced these things myself.</code></p>
+<p><code>I have an example from my own life.</code></p>
+</li>
+<li><h3 id="模板-1"><a href="#模板-1" class="headerlink" title="模板"></a>模板</h3><ul>
+<li>In the reading passage, there is a term called…</li>
+<li>And the professor in the lecture uses  <em>(the following)</em>  as an example to help us understand.<ul>
+<li>his own / friends’ experience</li>
+<li>an experiment</li>
+<li>…(maybe an animal or plant)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><h3 id="TIPS-1"><a href="#TIPS-1" class="headerlink" title="TIPS"></a>TIPS</h3><ul>
+<li><p>第一句不需要说文章中关于term的解释，重复文章中的内容没有必要</p>
+</li>
+<li><p>一些原因，细节性的可以不说，说<strong>节点</strong>重要信息</p>
+</li>
+<li><p>如果怕尴尬就说这句话</p>
+<p><code>This is what I learn from the passage.</code></p>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="Task-5"><a href="#Task-5" class="headerlink" title="Task 5"></a>Task 5</h1><blockquote>
+<p>住行，time/schedule，conflict，paper等等</p>
+<p>一般是两个童鞋conversation，一个抱怨问题，另一个在安慰她帮忙想解决办法</p>
+</blockquote>
+<ol>
+<li><h3 id="题目流程-2"><a href="#题目流程-2" class="headerlink" title="题目流程"></a>题目流程</h3><p>听一篇<strong>听力</strong>（1min左右）</p>
+<p>之后是20s整理思路，60s回答（10s + 45s）</p>
+<p>conversation结构如下：</p>
+<p><img src="/2018/08/23/托福口语-Task3-5模板/problem.png" width="60%" div align="left"></p>
+</li>
+<li><h3 id="模板-2"><a href="#模板-2" class="headerlink" title="模板"></a>模板</h3><ul>
+<li><p>The problem the m/w gets in the conversation is that…/</p>
+<p>The m/w speakers in the conversation get a problem that…</p>
+</li>
+<li><p>However, two possible solutions are mentioned in the conversation, one is…another is…</p>
+</li>
+<li><p>Personally, I’d recommend him/her/them to choose 1st / 2nd solution because…</p>
+<p>if I were the speaker in that situation, I’d definitely take the 1st / 2nd option,because…</p>
+</li>
+</ul>
+</li>
+<li><h3 id="TIPS-2"><a href="#TIPS-2" class="headerlink" title="TIPS"></a>TIPS</h3><ul>
+<li><p>说一个的好处和另外一个的坏处</p>
+</li>
+<li><p>听力内容少或者没记到可以自己编        </p>
+</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h1 id="Task-6"><a href="#Task-6" class="headerlink" title="Task 6"></a>Task 6</h1><blockquote>
+<p>生物比较多</p>
+<p>professor给学生们讲述商业战略，动物的优劣势等等</p>
+</blockquote>
+<ol>
+<li><h3 id="题目流程-3"><a href="#题目流程-3" class="headerlink" title="题目流程"></a>题目流程</h3><p>听一篇<strong>听力</strong>（1min+）</p>
+<p>之后是20s整理思路，60s回答（10s + 45s）</p>
+<p>lecture结构如下：</p>
+<p><img src="/2018/08/23/托福口语-Task3-5模板/introduction.png" width="60%" height="50%" div align="left"></p>
+</li>
+<li><h3 id="模板-3"><a href="#模板-3" class="headerlink" title="模板"></a>模板</h3><ul>
+<li><p>There are two…</p>
+<ul>
+<li>adaptations</li>
+</ul>
+<ul>
+<li>advantages</li>
+<li>disadvantages</li>
+<li>ways</li>
+<li>strategies</li>
+<li>…</li>
+</ul>
+</li>
+<li><p>one is …ex…</p>
+</li>
+<li>another is …ex…</li>
+</ul>
+</li>
+<li><h3 id="TIPS-3"><a href="#TIPS-3" class="headerlink" title="TIPS"></a>TIPS</h3><ul>
+<li>lecture刚开始的废话不用管，说正事的时候开始记，说的时候要概括</li>
+<li>可以不做太多的同义转换</li>
+<li>动词连着出现，大部分都得记</li>
+<li>句式上可以采用 被动语态 + 定语从句 + 动名词ing</li>
+</ul>
+</li>
+</ol>
+</div></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">Ivan Yang</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="https://blog.ivan-yang.com/2018/08/23/托福口语-Task3-5模板/">https://blog.ivan-yang.com/2018/08/23/托福口语-Task3-5模板/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/TOEFL/">TOEFL</a></div><nav id="pagination"><div class="prev-post pull-left"><a href="/2018/08/23/托福写作-综合写作模板/"><i class="fa fa-chevron-left">  </i><span>托福写作| 综合写作模板</span></a></div><div class="next-post pull-right"><a href="/2018/08/20/Markdown语法tips/"><span>Markdown语法tips</span><i class="fa fa-chevron-right"></i></a></div></nav></div></div><footer><div class="layout" id="footer"><div class="copyright">&copy;2018 - 2019 By Ivan Yang</div><div class="framework-info"><span>Driven - </span><a href="http://hexo.io"><span>Hexo</span></a><span class="footer-separator">|</span><span>Theme - </span><a href="https://github.com/Molunerfinn/hexo-theme-melody"><span>Melody</span></a></div><div class="busuanzi"><script async src="//dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script><span id="busuanzi_container_page_pv"><i class="fa fa-file-o"></i><span id="busuanzi_value_page_pv"></span><span></span></span></div></div></footer><i class="fa fa-arrow-up" id="go-up" aria-hidden="true"></i><script src="/js/third-party/anime.min.js"></script><script src="/js/third-party/jquery.min.js"></script><script src="/js/third-party/jquery.fancybox.min.js"></script><script src="/js/third-party/velocity.min.js"></script><script src="/js/third-party/velocity.ui.min.js"></script><script src="/js/utils.js?version=1.5.6"></script><script src="/js/fancybox.js?version=1.5.6"></script><script src="/js/sidebar.js?version=1.5.6"></script><script src="/js/copy.js?version=1.5.6"></script><script src="/js/fireworks.js?version=1.5.6"></script><script src="/js/transition.js?version=1.5.6"></script><script src="/js/scroll.js?version=1.5.6"></script><script src="/js/head.js?version=1.5.6"></script><script type="text/x-mathjax-config">MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+    processEscapes: true,
+    skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+  },
+  CommonHTML: {
+    linebreaks: { automatic: true, width: "90% container" }
+  },
+  "HTML-CSS": { 
+    linebreaks: { automatic: true, width: "90% container" }
+  },
+  "SVG": { 
+    linebreaks: { automatic: true, width: "90% container" }
+  }
+});
+</script><script type="text/x-mathjax-config">MathJax.Hub.Queue(function() {
+  var all = MathJax.Hub.getAllJax(), i;
+  for (i=0; i < all.length; i += 1) {
+    all[i].SourceElement().parentNode.className += ' has-jax';
+  }
+});
+</script><script src="https://cdn.jsdelivr.net/npm/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script><script src="/js/search/local-search.js"></script><div class="search-dialog" id="local-search"><div class="search-dialog__title" id="local-search-title">Local search</div><div id="local-input-panel"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts"></div></div></div><hr><div id="local-search-results"><div id="local-hits"></div><div id="local-stats"><div class="local-search-stats__hr" id="hr"><span>Powered by</span> <a href="https://github.com/wzpan/hexo-generator-search" style="color:#49B1F5;">hexo-generator-search</a></div></div></div><span class="search-close-button"><i class="fa fa-times"></i></span></div><div class="search-mask"></div></body></html>
