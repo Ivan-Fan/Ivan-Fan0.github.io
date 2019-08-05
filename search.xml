@@ -4,13 +4,29 @@
   
     
     <entry>
-      <title>你好，世界</title>
-      <link href="/2019/07/23/%E4%BD%A0%E5%A5%BD%EF%BC%8C%E4%B8%96%E7%95%8C/"/>
-      <url>/2019/07/23/%E4%BD%A0%E5%A5%BD%EF%BC%8C%E4%B8%96%E7%95%8C/</url>
+      <title>医学图像分割| Unet&amp;Unet++</title>
+      <link href="/2019/08/04/%E5%8C%BB%E5%AD%A6%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2-Unet-Unet/"/>
+      <url>/2019/08/04/%E5%8C%BB%E5%AD%A6%E5%9B%BE%E5%83%8F%E5%88%86%E5%89%B2-Unet-Unet/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<blockquote><p>医学图像分割常用网络，Unet 和他的升级版</p></blockquote><h2 id="Unet"><a href="#Unet" class="headerlink" title="Unet"></a>Unet</h2><h3 id="一、前人工作"><a href="#一、前人工作" class="headerlink" title="一、前人工作"></a>一、前人工作</h3><p><strong>sliding window:</strong> </p><p>优势：</p><ul><li>localize的功能</li><li>训练的patch很多（是不是表示有个很多个分割出来的sliding window）</li></ul><p>劣势：</p><ul><li>slow</li><li>localization accuracy 和 the use of context的权衡</li></ul><h3 id="二、Unet闪亮登场"><a href="#二、Unet闪亮登场" class="headerlink" title="二、Unet闪亮登场"></a>二、Unet闪亮登场</h3><ol><li><p>结构</p><p>23个conv，U型，长连接</p><p>输出<strong>output segmentation map</strong>是2个channel: 本质是每个像素点的二分类问题。图像分为前景后景，两个channel分别表示每个像素点对应前后景的分数，谁大就是谁</p><p>展示的结果是把图像的每个像素点打上0或者255，效果就是那种黑白图，注意和上面区分（不过上面说的<strong>output map</strong>也有可能表示这个，具体看语境）</p><p><img src="/2019/08/04/医学图像分割-Unet-Unet/Unet网络结构.jpg" alt="Unet网络结构"></p></li><li><p>结构特点</p><ul><li>U型结构，encoder+decoder，提高output的分辨率</li><li>采用长连接skip connection</li><li>upsampling有很多channel，更好地传播语义信息</li><li>overlap-tile strategy：这个需要分2步解释。① 一个比较大的图像不好一次性扔到网络里进行分割，于是就将他分割为小块（tile）分割后再接起来（所以可能进网络之前就已经变成很多小块了）。② 网络的输出会比输入小一点，在周围padding一圈，小块拼起来的时候会弥补上seam</li><li>excessive data augmentation - elastic deformation（更贴近医学图像的特点）</li></ul></li><li><p>training</p><p><strong>①Energy Function</strong>：（cross entropy）</p><p>$E = \sum\limits_{X\to \Omega}\omega(X)log(p_{l(X)}(X))$</p><p>其中 $p_{k}(X)=exp(a_{k(X)}/(\sum_{k’=1}^Kexp(a_{k’}(X)))$ , 感觉是计算x属于哪一类的可能性（归一化）</p><p>$l(x)$代表x真正属于的分类，K代表总共多少类别    </p><p>​    </p><p><strong>②challenge</strong>（相同类别可能有很多细胞，这些细胞距离很近<strong>touching objects</strong>，给分类造成困难)，提出使用：</p><p><em>weighted loss:</em></p><p>$w(x)=w_c(x)+w_0\cdot exp(- \frac{(d_1(x)+d_2(x))^2}{2\sigma^2})$</p><p>其中$d_1(x)$表示距离最近cell的距离，$d_2(x)$表示距离第二近的    如何理解weighted loss？相当于“越靠近边界的位置，权重越高，网络出错的代价就越高”，所以网络会学习尽量让他不出错。d2 是为了处理可能好多个object汇聚在一起的地方（作者可能也试过d3然后发现没有什么乱用。。）</p><p>​    </p><p>③a good initialization of weights is extremely important</p><p>高斯随机分布，标准差$\sqrt{(2/N)}$，N 代表接下来神经元节点数</p></li><li></li></ol><h2 id="Unet-1"><a href="#Unet-1" class="headerlink" title="Unet++"></a>Unet++</h2><p>a series of nested, densed skip pathways</p><h3 id="一、结构介绍"><a href="#一、结构介绍" class="headerlink" title="一、结构介绍"></a>一、结构介绍</h3><p><img src="/2019/08/04/医学图像分割-Unet-Unet/Unet++网络结构.jpg" alt="Unet++网络结构"></p><ol><li><p>总体特点</p><ul><li>re-designed skip pathways (密集的短连接)，好处是可以让语义上更接近的feature融合，获得更好地效果</li><li>deep supervision 深度监督</li></ul></li><li><p>implementation details</p><ul><li><p>训练过程中对几个模型的Dice coefficient， IoU进行监督</p></li><li><p>采用early stop</p></li><li>添加了wide U-net，保证参数量和Unet近似，以排除参数量对实验结果的干扰（控制变量法）</li><li>Adam optimizer，学习率3e-4</li><li>第一行4个目标节点后面都加上了一个1x1的conv, sigmoid 激活函数</li></ul></li><li><p>deep supervision的细节</p><p>两种模式:</p><ul><li>accurate mode：所有segmentation branches 的output 被平均</li><li>fast mode： 从4个segmentation branches 中选择一个作为输出，选择的依据是the extent of model pruning and speed gain (更小的branch精度可能会下降一些，但是速度会快)</li></ul></li></ol><p>   deep supervision可以很好地帮助我们理解对于一个神经网络，到底多深才合适的问题。理解了这个问题之后，我们就可以在选择稍微降低一点精度的情况下大大提升网络运行的速度    </p><ol start="4"><li><h3 id="二、Unet-amp-Unet-的区别总结"><a href="#二、Unet-amp-Unet-的区别总结" class="headerlink" title="二、Unet &amp; Unet++的区别总结"></a>二、Unet &amp; Unet++的区别总结</h3></li><li><p>Unet++在原本Unet的skip pathway上增加了更多conv layers, 短连接可以很好地弥补encoder 和decoder之间的segmantic gap，也可以improve gradient flow</p></li><li>Unet++具有deep supervision</li></ol>]]></content>
       
       
+      <categories>
+          
+          <category> 机器学习 </category>
+          
+          <category> 矩阵革命：重装上阵 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 机器学习 </tag>
+            
+            <tag> 矩阵革命 </tag>
+            
+        </tags>
       
     </entry>
     
@@ -122,9 +138,9 @@
             
             <tag> Movie </tag>
             
-            <tag> 青春 </tag>
-            
             <tag> 亲情 </tag>
+            
+            <tag> 青春 </tag>
             
         </tags>
       
@@ -238,11 +254,11 @@
             
             <tag> Movie </tag>
             
-            <tag> 亲情 </tag>
-            
             <tag> 科幻 </tag>
             
             <tag> 爱情 </tag>
+            
+            <tag> 亲情 </tag>
             
         </tags>
       
@@ -446,7 +462,7 @@
       <link href="/2018/08/15/%E5%90%B4%E6%81%A9%E8%BE%BEdeeplearning%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89-logistic%E5%9B%9E%E5%BD%92/"/>
       <url>/2018/08/15/%E5%90%B4%E6%81%A9%E8%BE%BEdeeplearning%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89-logistic%E5%9B%9E%E5%BD%92/</url>
       
-        <content type="html"><![CDATA[<blockquote><p>第二周 神经网络基础 </p></blockquote><h2 id="logistic回归"><a href="#logistic回归" class="headerlink" title="logistic回归"></a>logistic回归</h2><hr><h3 id="一、-初探logistic回归"><a href="#一、-初探logistic回归" class="headerlink" title="一、 初探logistic回归"></a>一、 初探logistic回归</h3><p>​        对于一个二分分类问题，可以归结为由一个输入X，得到一个输出Y。线性回归可以实现因变量为任意实数，但在二分分类问题中往往只有0-1。所以logistic回归在线性回归基础上加入sigmoid函数，将Y进行限制。如下图：</p><p><img src="http://wx1.sinaimg.cn/mw690/005NLrt5gy1fu9slcaplnj30xd0itwf9.jpg" alt="sigmoid函数"></p><h3 id="二、-相关公式"><a href="#二、-相关公式" class="headerlink" title="二、 相关公式"></a>二、 相关公式</h3><ul><li><strong>Step 1     计算</strong>  $\large\hat{y}$</li></ul><p>$$<br>\begin{cases}<br>\large Z = W^{T}X\ +\ b\<br>\large\sigma(Z)=\Large\frac{1}{1\ +\ e^{-Z}}\<br>\large\hat{y}=a<br>\end{cases}<br>$$</p><ul><li><strong>step 2    计算 Cost Function $J(w,b)$</strong></li></ul><p>$$<br>  \begin{cases}<br>  \large L(\hat{y},y)=-(y\ log\ (\hat{y})+(1-y)\ log\ (1-\hat{y}))\<br>  \large J(w,b)=\frac{1}{m}\sum_{i=1}^{m}L(\hat{y},y)<br>  \end{cases}<br>$$</p><ul><li><strong>step 2</strong>     <strong>梯度下降 gradient</strong></li></ul><p>$$<br>\begin{cases}<br>\large w=w\ -\ \alpha\Large\frac{dJ(w,b)}{dw},\ \large即\ w=w\ -\ \alpha dw\<br>\large b=b\ -\ \alpha\Large\frac{dJ(w,b)}{db},\ \large即\ b=b\ -\ \alpha db\<br>\end{cases}<br>$$</p><h3 id="三、代码"><a href="#三、代码" class="headerlink" title="三、代码"></a>三、代码</h3><blockquote><p>下面以两个特征为例（为了显示效果，采用MathJax书写）</p></blockquote><p>$\large J=0,dw_{1}=0,dw_{2}=0,db=0$</p><p>$\large for\quad i=1\quad to\quad m :$</p><p>$\qquad\large z^{(i)}=w^{T}x^{(i)}\ +\ b$</p><p>$\qquad \large a^{(i)}=\sigma(z^{(i)})$</p><p>$\qquad \large J\ + =-[\ y^{(i)}log\ a^{(i)}+(1-y^{(i)})log\ (1-a^{(i)})\ ]$</p><p>$\qquad \large dz^{(i)}=a^{(i)}-y^{(i)}$</p><p>$\qquad \large dw_{1}\ +=\ x^{(i)}_1dz^{(i)}$</p><p>$\qquad \large dw_{2}\ +=\ x^{(i)}_2dz^{(i)}$</p><p>$\qquad \large db\ +=dz^{(i)} $</p><p>$\large J=J/m,dw_{1}=dw_1/m,dw_{2}=dw_2/m,db=db/m$</p><h3 id="四、向量化"><a href="#四、向量化" class="headerlink" title="四、向量化"></a>四、向量化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> iter <span class="keyword">in</span> range(<span class="number">1000</span>):   <span class="comment"># 用于控制循环次数</span></span><br><span class="line">    Z = np.dot(W.T,X) + b</span><br><span class="line">    A = sigmoid(Z)</span><br><span class="line">    dZ = A - Y</span><br><span class="line">    dW = <span class="number">1</span>/m*X*dZ.T</span><br><span class="line">    db = <span class="number">1</span>/m*nnp.sum(dZ)</span><br><span class="line">    W = W - alpha*dW</span><br><span class="line">    b = b - alpha*db</span><br></pre></td></tr></table></figure><blockquote><p>注：各向量的shape如下：<br>$Z : (1,m)$<br>$ W : (n_x,1)$<br>$b : (1,1)$<br>其中 dw 的每一行是 m 个 $xdz$ 的和，不同行代表 $dw_1,dw_2,\cdots,dw_{nx}$</p></blockquote>]]></content>
+        <content type="html"><![CDATA[<blockquote><p>第二周 神经网络基础 </p></blockquote><h2 id="logistic回归"><a href="#logistic回归" class="headerlink" title="logistic回归"></a>logistic回归</h2><hr><h3 id="一、-初探logistic回归"><a href="#一、-初探logistic回归" class="headerlink" title="一、 初探logistic回归"></a>一、 初探logistic回归</h3><p>　　对于一个二分分类问题，可以归结为由一个输入X，得到一个输出Y。线性回归可以实现因变量为任意实数，但在二分分类问题中往往只有0-1。所以logistic回归在线性回归基础上加入sigmoid函数，将Y进行限制。如下图：</p><p><img src="http://wx1.sinaimg.cn/mw690/005NLrt5gy1fu9slcaplnj30xd0itwf9.jpg" alt="sigmoid函数"></p><h3 id="二、-相关公式"><a href="#二、-相关公式" class="headerlink" title="二、 相关公式"></a>二、 相关公式</h3><ul><li><strong>Step 1     计算</strong>  $\large\hat{y}$</li></ul><p>$$<br>\begin{cases}<br>\large Z = W^{T}X\ +\ b\<br>\large\sigma(Z)=\Large\frac{1}{1\ +\ e^{-Z}}\<br>\large\hat{y}=a<br>\end{cases}<br>$$</p><ul><li><strong>step 2    计算 Cost Function $J(w,b)$</strong></li></ul><p>$$<br>  \begin{cases}<br>  \large L(\hat{y},y)=-(y\ log\ (\hat{y})+(1-y)\ log\ (1-\hat{y}))\<br>  \large J(w,b)=\frac{1}{m}\sum_{i=1}^{m}L(\hat{y},y)<br>  \end{cases}<br>$$</p><ul><li><strong>step 2</strong>     <strong>梯度下降 gradient</strong></li></ul><p>$$<br>\begin{cases}<br>\large w=w\ -\ \alpha\Large\frac{dJ(w,b)}{dw},\ \large即\ w=w\ -\ \alpha dw\<br>\large b=b\ -\ \alpha\Large\frac{dJ(w,b)}{db},\ \large即\ b=b\ -\ \alpha db\<br>\end{cases}<br>$$</p><h3 id="三、代码"><a href="#三、代码" class="headerlink" title="三、代码"></a>三、代码</h3><blockquote><p>下面以两个特征为例（为了显示效果，采用MathJax书写）</p></blockquote><p>$\large J=0,dw_{1}=0,dw_{2}=0,db=0$</p><p>$\large for\quad i=1\quad to\quad m :$</p><p>$\qquad\large z^{(i)}=w^{T}x^{(i)}\ +\ b$</p><p>$\qquad \large a^{(i)}=\sigma(z^{(i)})$</p><p>$\qquad \large J\ + =-[\ y^{(i)}log\ a^{(i)}+(1-y^{(i)})log\ (1-a^{(i)})\ ]$</p><p>$\qquad \large dz^{(i)}=a^{(i)}-y^{(i)}$</p><p>$\qquad \large dw_{1}\ +=\ x^{(i)}_1dz^{(i)}$</p><p>$\qquad \large dw_{2}\ +=\ x^{(i)}_2dz^{(i)}$</p><p>$\qquad \large db\ +=dz^{(i)} $</p><p>$\large J=J/m,dw_{1}=dw_1/m,dw_{2}=dw_2/m,db=db/m$</p><h3 id="四、向量化"><a href="#四、向量化" class="headerlink" title="四、向量化"></a>四、向量化</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> iter <span class="keyword">in</span> range(<span class="number">1000</span>):   <span class="comment"># 用于控制循环次数</span></span><br><span class="line">    Z = np.dot(W.T,X) + b</span><br><span class="line">    A = sigmoid(Z)</span><br><span class="line">    dZ = A - Y</span><br><span class="line">    dW = <span class="number">1</span>/m*X*dZ.T</span><br><span class="line">    db = <span class="number">1</span>/m*nnp.sum(dZ)</span><br><span class="line">    W = W - alpha*dW</span><br><span class="line">    b = b - alpha*db</span><br></pre></td></tr></table></figure><blockquote><p>注：各向量的shape如下：<br>$Z : (1,m)$<br>$ W : (n_x,1)$<br>$b : (1,1)$<br>其中 dw 的每一行是 m 个 $xdz$ 的和，不同行代表 $dw_1,dw_2,\cdots,dw_{nx}$</p></blockquote>]]></content>
       
       
       <categories>
