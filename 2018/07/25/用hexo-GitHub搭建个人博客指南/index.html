@@ -7,7 +7,7 @@
     error: 'Copy error',
     noSupport: 'The browser does not support'
   }
-} </script></head><body><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar"><div class="toggle-sidebar-info text-center"><span data-toggle="Toggle article">Toggle site</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#配置ssh"><span class="toc-number">1.</span> <span class="toc-text">配置ssh</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#coding"><span class="toc-number">2.</span> <span class="toc-text">coding</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用操作"><span class="toc-number">3.</span> <span class="toc-text">常用操作:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、部署文章"><span class="toc-number">3.1.</span> <span class="toc-text">一、部署文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、hexo博客如何添加本地图片？"><span class="toc-number">3.2.</span> <span class="toc-text">二、hexo博客如何添加本地图片？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、其他"><span class="toc-number">3.3.</span> <span class="toc-text">三、其他</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、bug汇总"><span class="toc-number">3.4.</span> <span class="toc-text">四、bug汇总</span></a></li></ol></li></ol></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="/img/zbh.jpg"></div><div class="author-info__name text-center">Ivan Yang</div><div class="author-info__description text-center">蒙昧初醒</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">Articles</span><span class="pull-right">27</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">Tags</span><span class="pull-right">14</span></a><a class="author-info-articles__categories article-meta" href="/categories"><span class="pull-left">Categories</span><span class="pull-right">22</span></a></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(/img/前进四_3.png)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">Ivan's blog</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus"><a class="site-page social-icon search"><i class="fa fa-search"></i><span> Search</span></a><a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a></span></div><div id="post-info"><div id="post-title">用hexo+GitHub搭建个人博客指南</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2018-07-25</time><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/经验/">经验</a><i class="fa fa-angle-right" aria-hidden="true"></i><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/经验/搭建博客/">搭建博客</a><div class="post-meta-wordcount"><span>Word count: </span><span class="word-count">1,330</span><span class="post-meta__separator">|</span><span>Reading time: 5 min</span></div></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><blockquote>
+} </script></head><body><i class="fa fa-arrow-right" id="toggle-sidebar" aria-hidden="true"></i><div id="sidebar"><div class="toggle-sidebar-info text-center"><span data-toggle="Toggle article">Toggle site</span><hr></div><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar"></div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#配置ssh"><span class="toc-number">1.</span> <span class="toc-text">配置ssh</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#coding"><span class="toc-number">2.</span> <span class="toc-text">coding</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#常用操作"><span class="toc-number">3.</span> <span class="toc-text">常用操作:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#一、部署文章"><span class="toc-number">3.1.</span> <span class="toc-text">一、部署文章</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#二、hexo博客如何添加本地图片？"><span class="toc-number">3.2.</span> <span class="toc-text">二、hexo博客如何添加本地图片？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#三、其他"><span class="toc-number">3.3.</span> <span class="toc-text">三、其他</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#四、bug汇总"><span class="toc-number">3.4.</span> <span class="toc-text">四、bug汇总</span></a></li></ol></li></ol></div></div><div class="author-info hide"><div class="author-info__avatar text-center"><img src="/img/zbh2.jpg"></div><div class="author-info__name text-center">Ivan Yang</div><div class="author-info__description text-center">蒙昧初醒</div><hr><div class="author-info-articles"><a class="author-info-articles__archives article-meta" href="/archives"><span class="pull-left">Articles</span><span class="pull-right">24</span></a><a class="author-info-articles__tags article-meta" href="/tags"><span class="pull-left">Tags</span><span class="pull-right">14</span></a><a class="author-info-articles__categories article-meta" href="/categories"><span class="pull-left">Categories</span><span class="pull-right">20</span></a></div></div></div><div id="content-outer"><div id="top-container" style="background-image: url(/img/前进四_3.png)"><div id="page-header"><span class="pull-left"> <a id="site-name" href="/">Ivan's blog</a></span><i class="fa fa-bars toggle-menu pull-right" aria-hidden="true"></i><span class="pull-right menus"><a class="site-page social-icon search"><i class="fa fa-search"></i><span> Search</span></a><a class="site-page" href="/">Home</a><a class="site-page" href="/archives">Archives</a><a class="site-page" href="/tags">Tags</a><a class="site-page" href="/categories">Categories</a></span></div><div id="post-info"><div id="post-title">用hexo+GitHub搭建个人博客指南</div><div id="post-meta"><time class="post-meta__date"><i class="fa fa-calendar" aria-hidden="true"></i> 2018-07-25</time><span class="post-meta__separator">|</span><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/经验/">经验</a><i class="fa fa-angle-right" aria-hidden="true"></i><i class="fa fa-inbox post-meta__icon" aria-hidden="true"></i><a class="post-meta__categories" href="/categories/经验/搭建博客/">搭建博客</a><div class="post-meta-wordcount"><span>Word count: </span><span class="word-count">1,330</span><span class="post-meta__separator">|</span><span>Reading time: 5 min</span></div></div></div></div><div class="layout" id="content-inner"><article id="post"><div class="article-container" id="post-content"><blockquote>
 <p>本文因篇幅的原因，部分细节已经省略。详细请参考以下文章：</p>
 <p><a href="https://www.jianshu.com/p/f4cc5866946b" target="_blank" rel="noopener">手把手教从零开始在GitHub上使用Hexo搭建博客教程(一)-附GitHub注册及配置</a><br><a href="https://www.cnblogs.com/tengj/p/5352572.html" target="_blank" rel="noopener">hexo干货系列：（四）将hexo博客同时托管到github和(coding</a>（后面的演示方式部署和自动部署可以不用看）<br><a href="https://www.jianshu.com/p/33bc0a0a6e90" target="_blank" rel="noopener">Hexo-修改Hexo主题</a></p>
 </blockquote>
@@ -17,6 +17,7 @@
 </li>
 <li><p>生成ssh秘钥：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen -t rsa -C "ivanyangfan09@126.com" // 输入GitHub注册邮箱</span><br></pre></td></tr></table></figure>
+
 <p>后面敲回车就行了，会在用户文件夹下（C:\Users\Ivan）生成.ssh文件夹。新文件  id_rsa（私钥）和id_rsa.pub（公 钥）</p>
 </li>
 <li><p>添加公钥到GitHub</p>
@@ -24,6 +25,7 @@
 </li>
 <li><p>测试SSH：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>可能会出现下面的提示，输入yes后回车</li>
 </ul>
@@ -44,6 +46,7 @@
 <h2 id="coding"><a href="#coding" class="headerlink" title="coding"></a>coding</h2><ol>
 <li><p>直接用GitHub的秘钥添加至coding，然后在git中输入以下的代码（桌面运行）：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@git.coding.net</span><br></pre></td></tr></table></figure>
+
 <ul>
 <li>出现这样的不用管：</li>
 </ul>
@@ -59,16 +62,19 @@
 <h2 id="常用操作"><a href="#常用操作" class="headerlink" title="常用操作:"></a>常用操作:</h2><h3 id="一、部署文章"><a href="#一、部署文章" class="headerlink" title="一、部署文章"></a>一、部署文章</h3><ol>
 <li><p>新建一篇文章：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo n "你想要的文章名字"</span><br></pre></td></tr></table></figure>
+
 <p>文章写好之后，就可以依次执行下面的代码发布了（发布的时候一定要在网速比较好的时候。。。曾经走过的坑）</p>
 </li>
 <li><p>先在本地启动hexo看看效果</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
 <p>如果发现页面打不开的话：</p>
 <ul>
 <li>关闭科网</li>
 <li>如果还不行，换下面的代码</li>
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo server -p 5000  #之前出错的原因可能是4000的端口被占用了</span><br></pre></td></tr></table></figure>
+
 <p>如果可以的话就可以执行下面的代码发布啦</p>
 </li>
 <li><p>清除生成内容</p>
@@ -79,6 +85,7 @@
 </li>
 <li><p>部署hexo</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo d</span><br></pre></td></tr></table></figure>
+
 </li>
 </ol>
 <h3 id="二、hexo博客如何添加本地图片？"><a href="#二、hexo博客如何添加本地图片？" class="headerlink" title="二、hexo博客如何添加本地图片？"></a>二、hexo博客如何添加本地图片？</h3><ol>
@@ -96,7 +103,7 @@
 </li>
 </ol>
 <p>​       图片示例：</p>
-<p><img src="/2018/07/25/用hexo-GitHub搭建个人博客指南/IMG_7589.JPG" alt></p>
+<p><img src="/2018/07/25/用hexo-GitHub搭建个人博客指南/%E7%94%A8hexo-GitHub%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E6%8C%87%E5%8D%97/IMG_7589.JPG" alt></p>
 <p>转自：<a href="https://www.cnblogs.com/codehome/p/8428738.html" target="_blank" rel="noopener">Hexo中添加本地图片</a></p>
 <p>注：有时候该方法会失效</p>
 <p>当文章名字中含有括号时，计算机可能会因为括号匹配问题无法准确识别路径。此时可以采用备用方案（图床）</p>
